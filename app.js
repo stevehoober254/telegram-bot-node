@@ -2,11 +2,17 @@ const express = require('express');
 const createError = require('http-errors');
 const morgan = require('morgan');
 require('dotenv').config();
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(morgan('dev'));
+
+const accessLogStream = fs.createWriteStream(path.join(__dirname, "access.log"), {
+  flags: "a"
+});
+app.use(morgan("combined", { stream: accessLogStream }));
 
 app.get('/', async (req, res, next) => {
   res.send({ message: 'Awesome it works 🐻' });
